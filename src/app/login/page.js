@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn, signOut, useSession } from "next-auth/react";
 import axios from "axios";
@@ -9,6 +9,10 @@ import loginImageLg from "../img/Login-Art-Lg.png";
 import Link from "next/link";
 
 export default function Login() {
+  const errorEmail = useRef(null);
+  const [validEmail, setValidEmail] = useState(false);
+  const errorPassword = useRef(null);
+  const [validPass, setValidPass] = useState(false);
   const { data: session } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,6 +46,13 @@ export default function Login() {
       if (error.response.status === 401) {
         alert("password salah");
       }
+    }
+
+    if(errorEmail.current.value === null | errorEmail.current.value === ""){
+      setValidEmail(true);
+    }
+    if(errorPassword.current.value === null | errorPassword.current.value === ""){
+      setValidPass(true)
     }
   };
 
@@ -82,8 +93,10 @@ export default function Login() {
                   type="email"
                   placeholder="Example@email.com"
                   onChange={(e) => setEmail(e.target.value)}
+                  ref={errorEmail}
                   className="border border-slate-600 p-2 rounded-lg"
                 />
+                {validEmail && errorEmail.current.value === null | errorEmail.current.value === "" ? <p>please fill this</p>: null}
               </div>
               <div className="flex flex-col gap-y-1">
                 <label htmlFor="password" className="text-primary-text">
@@ -95,8 +108,11 @@ export default function Login() {
                   placeholder="At least 8 characters"
                   minLength={8}
                   onChange={(e) => setPassword(e.target.value)}
+                  ref={errorPassword}
                   className="border border-slate-600 p-2 rounded-lg"
                 />
+                {validPass && errorPassword.current.value === null | errorPassword.current.value === "" ? <p>Harap di isi</p>: null}
+                {validPass && errorPassword.current.value != 0 && errorPassword.current.value.length < 8 ? <p>at least 8 character</p>:null}
               </div>
               <Link href={"/"} className="text-link self-end">
                 Forgot Password
